@@ -1,2 +1,3 @@
-# Solidity-Proxy-Playground
-The good, the bad, and the ugly of proxy implementations
+# Proxy Playground
+
+This repository is a collection of proxy implementations. Each type of proxy has a vulnerable implementation and a fixed implementation. Do NOT use the vulnerable versions for production contracts!
