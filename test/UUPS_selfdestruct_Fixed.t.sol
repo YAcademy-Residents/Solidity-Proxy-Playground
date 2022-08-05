@@ -3,10 +3,10 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import {UUPSProxy} from "../src/UUPS_selfdestruct/UUPSProxy.sol";
-import {SimpleToken} from "../src/UUPS_selfdestruct/SimpleToken.sol";
-import {SimpleTokenV2} from "../src/UUPS_selfdestruct/SimpleTokenV2.sol";
-import {ExplodingKitten} from "../src/UUPS_selfdestruct/ExplodingKitten.sol";
+import {UUPSProxy} from "../src/UUPS_selfdestruct_Fixed/UUPSProxy.sol";
+import {SimpleToken} from "../src/UUPS_selfdestruct_Fixed/SimpleToken.sol";
+import {SimpleTokenV2} from "../src/UUPS_selfdestruct_Fixed/SimpleTokenV2.sol";
+import {ExplodingKitten} from "../src/UUPS_selfdestruct_Fixed/ExplodingKitten.sol";
 
 contract UUPS_selfdestruct is Test {
     // These contracts are from https://github.com/yehjxraymond/exploding-kitten

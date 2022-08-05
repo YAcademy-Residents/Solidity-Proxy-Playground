@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import "openzeppelin-contracts-upgradeable-4.3.1/proxy/utils/UUPSUpgradeable.sol";
+import "openzeppelin-contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 // Fun Fact: An ExplodingKitten can be exploded by another ExplodingKitten
 contract ExplodingKitten is UUPSUpgradeable {
