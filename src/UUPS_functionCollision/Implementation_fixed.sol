@@ -3,12 +3,10 @@
 // DO NOT USE THIS IN PRODUCTION
 pragma solidity ^0.8.13;
 
-contract ImplementationFixed
- {
-
+contract ImplementationFixed {
     address public immutable owner;
 
-    constructor (address owner_) {
+    constructor(address owner_) {
         owner = owner_;
     }
 
@@ -22,5 +20,4 @@ contract ImplementationFixed
     function doImplementationStuff() external returns (bool) {
         return true;
     }
-
 }

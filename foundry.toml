@@ -1,6 +1,3 @@
 [profile.default]
-src = 'src'
-out = 'out'
-libs = ['lib']
-
-# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+solc = "0.8.17"
+bytecode_hash = "none"
