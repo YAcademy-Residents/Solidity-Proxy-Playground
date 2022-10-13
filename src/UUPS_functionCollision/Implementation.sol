@@ -4,10 +4,9 @@
 pragma solidity ^0.8.13;
 
 contract Implementation {
-
     address public immutable owner;
 
-    constructor (address owner_) {
+    constructor(address owner_) {
         owner = owner_;
     }
 
@@ -18,13 +17,11 @@ contract Implementation {
         }
     }
 
-    function delegatecallContract(address target, bytes calldata _calldata) payable external {
-        (, bytes memory ret) =  target.delegatecall(_calldata);
-
+    function delegatecallContract(address target, bytes calldata _calldata) external payable {
+        (, bytes memory ret) = target.delegatecall(_calldata);
     }
 
     function doImplementationStuff() external returns (bool) {
         return true;
     }
-
 }

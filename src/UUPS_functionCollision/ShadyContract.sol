@@ -6,8 +6,10 @@ pragma solidity ^0.8.13;
 
 contract ShadyContract {
     address public constant ATTACKER_CONTRACT_ADDRESS = address(0xB0FFEDC0DE);
+
+
     function superSafeFunction96508587(address) external {
-        // this is totally safe
+        // this fn is totally safu
     }
 
     function verySafeNotARug() public {
