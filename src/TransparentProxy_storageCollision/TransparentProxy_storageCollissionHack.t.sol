@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import "forge-std/Test.sol";
 
 import {Proxy} from      "./TransparentProxy_storageCollisionHack.sol";
-import {ProxyFixed} from "./TransparentProxy_storageCollisionHack_Fixed.sol";
+import {ProxyFixed} from "./TransparentProxy_storageCollisionHack_fixed.sol";
 import {Implementation} from "./Implementation.sol";
 
 interface IProxy {
