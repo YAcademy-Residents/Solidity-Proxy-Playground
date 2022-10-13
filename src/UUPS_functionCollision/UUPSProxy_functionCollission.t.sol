@@ -40,7 +40,7 @@ contract UUPSProxy_functionCollisionHack is Test {
     // function `verySafeNotARug` on a shady contract, then that function delegatecalls
     // another innocuous sounding `superSafeFunction96508587` which collides with the `setImplementation`
     // function in the implementation contract.
-    function testFailUUPSProxy_oopsABCD() public {
+    function testFailUUPSProxy_oops() public {
         address oldImplementationAddress = address(implementation);
         assertEq(IProxy(proxy).implementation(), oldImplementationAddress);
 
