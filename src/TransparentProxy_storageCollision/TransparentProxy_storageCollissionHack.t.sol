@@ -35,17 +35,13 @@ contract TransparentProxy_storageCollisionHack is Test {
     // Here's the hack, if owner calls the very innocent `setBenignAddress`
     // then because the proxy uses the storage on the proxy, this fn will update
     // slot 0 which is the implementation slot on the proxy.
-    function testFailProxy_oops() public {
-        address implementationAddress = address(implementation);
+    function testxFailProxy_oops() public {
+        assertEq(IProxy(proxy).implementation(), address(implementation));
 
         address newImplementationAddress = address(0xb0ffed);
         vm.prank(owner);
         IProxy(proxy).setBenignAddress(newImplementationAddress);
         assertEq(IProxy(proxy).implementation(), newImplementationAddress);
-
-        // This will cause revert because this fn is not found on the new implementation
-        vm.prank(owner);
-        IProxy(proxy).setBenignAddress(address(0x123));
 
     }
 
@@ -54,7 +50,8 @@ contract TransparentProxy_storageCollisionHack is Test {
         address oldImplementationAddress = address(implementation);
         address newImplementationAddress = address(0xb0ffed);
 
-        // The storage slot 0 no longer collides with the storage slot of the `implementation` address
+        // The storage slot 0 no longer collides with the storage slot of the
+        // `implementation` address thanks to eip1967
         vm.prank(owner);
         IProxy(proxyFixed).setBenignAddress(newImplementationAddress);
         assertEq(IProxy(proxyFixed).implementation(), oldImplementationAddress);
