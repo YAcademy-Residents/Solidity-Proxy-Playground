@@ -14,6 +14,14 @@ contract Proxy {
     address immutable public owner;
     address public implementation;
 
+    modifier ifAdmin() {
+        if (msg.sender == owner) {
+            _;
+        } else {
+            _fallback();
+        }
+    }
+
     constructor(address implementation_, address owner_) {
         owner = owner_;
         implementation = implementation_;
@@ -24,24 +32,26 @@ contract Proxy {
         implementation = implementation_;
     }
 
-    fallback() external payable {
-        require(msg.sender == owner);
-
-        address implementation_ = implementation;
+  /**
+     * @dev Delegates the current call to `implementation`.
+     *
+     * This function does not return to its internal call site, it will return directly to the external caller.
+     */
+    function _delegate(address implementation_) internal {
         assembly {
             // Copy msg.data. We take full control of memory in this inline assembly
             // block because it will not return to Solidity code. We overwrite the
-            // Solidity scratch space at memory position 0.
+            // Solidity scratch pad at memory position 0.
             calldatacopy(0, 0, calldatasize())
 
-            // delegatecall the implementation.
+            // Call the implementation.
             // out and outsize are 0 because we don't know the size yet.
-            let success := delegatecall(gas(), implementation_, 0, calldatasize(), 0, 0)
+            let result := delegatecall(gas(), implementation_, 0, calldatasize(), 0, 0)
 
-            // copy the returned data.
+            // Copy the returned data.
             returndatacopy(0, 0, returndatasize())
 
-            switch success
+            switch result
             // delegatecall returns 0 on error.
             case 0 {
                 revert(0, returndatasize())
@@ -52,6 +62,23 @@ contract Proxy {
         }
     }
 
-    receive() external payable {
+
+    /**
+     * @dev Delegates the current call to the address returned by `_implementation()`.
+     *
+     * This function does not return to its internal call site, it will return directly to the external caller.
+     */
+    function _fallback() internal virtual {
+        _delegate(implementation);
     }
+
+    /**
+     * @dev Fallback function that delegates calls to the address returned by `_implementation()`. Will run if no other
+     * function in the contract matches the call data.
+     */
+    fallback() external payable virtual {
+        _fallback();
+    }
+
+    receive() payable external {}
 }
