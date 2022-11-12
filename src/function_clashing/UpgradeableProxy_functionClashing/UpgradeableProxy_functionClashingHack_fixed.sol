@@ -25,7 +25,7 @@ contract ProxyFixed {
 
     function setImplementation(address implementation_) external {
         // Only Admin can call admin fns on the proxy.
-        // This eliminates risk of fn collision with something on the imple.
+        // This eliminates risk of function clashing with something on the imple.
         require(msg.sender == admin, "only admin");
         implementation = implementation_;
     }

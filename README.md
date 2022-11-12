@@ -13,3 +13,7 @@ forge install OpenZeppelin/openzeppelin-contracts
 ```
 
 If you run `forge build` for the first time without installing the dependencies and get error messages, try running it a second time or run `forge test`. Forge has a bug where it may not recognize the installed packages the first the forge is run.
+
+## Included Vulnerabilities
+
+TODO

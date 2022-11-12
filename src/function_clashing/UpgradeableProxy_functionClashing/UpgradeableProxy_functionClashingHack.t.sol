@@ -3,8 +3,8 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import {Proxy} from      "./UpgradeableProxy_functionCollisionHack.sol";
-import {ProxyFixed} from "./UpgradeableProxy_functionCollisionHack_fixed.sol";
+import {Proxy} from      "./UpgradeableProxy_functionClashingHack.sol";
+import {ProxyFixed} from "./UpgradeableProxy_functionClashingHack_fixed.sol";
 import {Implementation} from "./Implementation.sol";
 
 interface IProxy {
@@ -13,7 +13,7 @@ interface IProxy {
     function superSafeFunction96508587(address) external;
 }
 
-contract UpgradeableProxy_functionCollisionHack is Test {
+contract UpgradeableProxy_functionClashingHack is Test {
     address payable public proxy;
     address payable public proxyFixed;
     Implementation public implementation;

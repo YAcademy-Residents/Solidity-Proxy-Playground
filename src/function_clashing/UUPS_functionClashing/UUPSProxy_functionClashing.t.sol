@@ -15,7 +15,7 @@ interface IProxy {
     function delegatecallContract(address,bytes memory) external;
 }
 
-contract UUPSProxy_functionCollisionHack is Test {
+contract UUPSProxy_functionClashingHack is Test {
     address payable public proxy;
     address payable public proxy2;
     Implementation public implementation;
