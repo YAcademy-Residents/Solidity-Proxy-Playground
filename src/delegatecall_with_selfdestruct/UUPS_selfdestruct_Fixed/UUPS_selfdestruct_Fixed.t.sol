@@ -3,10 +3,13 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import {UUPSProxy} from "../src/UUPS_selfdestruct/UUPSProxy.sol";
-import {SimpleToken} from "../src/UUPS_selfdestruct/SimpleToken.sol";
-import {SimpleTokenV2} from "../src/UUPS_selfdestruct/SimpleTokenV2.sol";
-import {ExplodingKitten} from "../src/UUPS_selfdestruct/ExplodingKitten.sol";
+import {UUPSProxy} from "./UUPSProxy.sol";
+import {SimpleToken} from "./SimpleToken.sol";
+import {SimpleTokenV2} from "./SimpleTokenV2.sol";
+import {ExplodingKitten} from "./ExplodingKitten.sol";
+
+// Original PoC: https://github.com/yehjxraymond/exploding-kitten
+// Github security issue: https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/security/advisories/GHSA-q4h9-46xg-m3x9
 
 contract UUPS_selfdestruct is Test {
     // These contracts are from https://github.com/yehjxraymond/exploding-kitten

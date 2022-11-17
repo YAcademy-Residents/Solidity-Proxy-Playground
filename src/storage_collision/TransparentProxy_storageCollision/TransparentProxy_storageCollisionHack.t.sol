@@ -11,6 +11,7 @@ interface IProxy {
     function implementation() external returns (address);
     function setBenignAddress(address) external;
     function setImplementation(address) external;
+	function owner() external returns (address);
 }
 
 contract TransparentProxy_storageCollisionHack is Test {
@@ -28,7 +29,7 @@ contract TransparentProxy_storageCollisionHack is Test {
         proxy = address(new Proxy(address(implementation), owner));
 
         // deploy fixed version
-        proxyFixed = address(new Proxy(address(implementation), owner));
+        proxyFixed = address(new ProxyFixed(address(implementation), owner));
 
     }
 
@@ -42,7 +43,7 @@ contract TransparentProxy_storageCollisionHack is Test {
         vm.prank(owner);
         IProxy(proxy).setBenignAddress(newImplementationAddress);
         assertEq(IProxy(proxy).implementation(), newImplementationAddress);
-
+		assertEq(IProxy(proxy).owner(), owner);
     }
 
     // Here's the same test on the fixed contract.

