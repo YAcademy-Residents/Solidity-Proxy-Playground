@@ -18,19 +18,23 @@ contract MetamorphicRug is Test {
 		parentAddr =  grandparentContract.deploy(1, bytecode);
         childAddr = Parent(parentAddr).deployChild();
 
+		// Never make assertions in the setUp function. Failed assertions won't result with failed test.
+		// But if the test fails, failed assert will be visible
+		// https://book.getfoundry.sh/tutorials/best-practices?highlight=setup#general-test-guidance
+		assertEq(parentAddr, grandparentContract.parent());
+
 		// The selfdestruct call must be done in setUp() due to a foundry limitation: https://github.com/foundry-rs/foundry/issues/1543
 		Parent(parentAddr).delegateFunction();
 		Child(childAddr).destroy();
-
-		// Never make assertions in the setUp function. Failed assertions won't result with failed test.
-		// https://book.getfoundry.sh/tutorials/best-practices?highlight=setup#general-test-guidance
 	}
 
 	// deploying the same contract Parent with the same salt will produce the same address
 	function testTheSameContract() public {
+		assertEq(parentAddr, grandparentContract.parent());
         bytes memory bytecode = abi.encodePacked(vm.getCode("Parent.sol"));
 		address newParrentAddr =  grandparentContract.deploy(1, bytecode);
 		assertEq(newParrentAddr, parentAddr);
+		assertEq(newParrentAddr, grandparentContract.parent());
 
 		uint256 add = 5;
 		assertEq(Parent(parentAddr).balance(), 0);
@@ -40,10 +44,13 @@ contract MetamorphicRug is Test {
 
 	// deploying the same contract Parent but with a different salt will produce a different address
 	function testDifferentSalt() public {
+		assertEq(parentAddr, grandparentContract.parent());
         bytes memory bytecode = abi.encodePacked(vm.getCode("Parent.sol"));
 		address newParrentAddr = grandparentContract.deploy(2, bytecode);
+
 		// different salt will produce different parent address
 		assertTrue(parentAddr != newParrentAddr);
+		assertTrue(parentAddr != grandparentContract.parent());
 	}
 
 	// deploying a different contract Parent2 with the same salt will produce the same address
@@ -52,6 +59,7 @@ contract MetamorphicRug is Test {
         bytes memory bytecode = abi.encodePacked(vm.getCode("Parent2.sol"));
 		address newParrentAddr =  grandparentContract.deploy(1, bytecode);
 		assertEq(newParrentAddr, parentAddr);
+		assertEq(parentAddr, grandparentContract.parent());
 
 		uint256 add = 5;
 		assertEq(Parent(parentAddr).balance(), 0);

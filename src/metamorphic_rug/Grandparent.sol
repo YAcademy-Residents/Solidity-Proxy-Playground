@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import {Parent} from "./Parent.sol";
 
 contract Grandparent {
+    address public parent;
     mapping (address => address) _implementations;
 
     function deploy(uint salt, bytes calldata bytecode) public returns (address) {
@@ -47,6 +48,7 @@ contract Grandparent {
           addr == metamorphicContractAddress,
           "Failed to deploy the new metamorphic contract."
         );
+        parent = addr;
         return addr;
     }
 
