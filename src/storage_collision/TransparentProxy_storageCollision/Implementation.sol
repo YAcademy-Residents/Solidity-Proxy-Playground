@@ -2,7 +2,6 @@
 // NOTE: These contracts have a critical bug.
 // DO NOT USE THIS IN PRODUCTION
 pragma solidity ^0.8.13;
-import "forge-std/console.sol";
 
 contract Implementation {
 

@@ -17,7 +17,7 @@ contract ImplementationFixed {
         }
     }
 
-    function doImplementationStuff() external returns (bool) {
+    function doImplementationStuff() external pure returns (bool) {
         return true;
     }
 }

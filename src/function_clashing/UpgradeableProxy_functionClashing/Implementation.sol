@@ -5,11 +5,11 @@ pragma solidity ^0.8.13;
 
 contract Implementation {
 
-    function doImplementationStuff() external returns (bool) {
+    function doImplementationStuff() external pure returns (bool) {
         return true;
     }
 
-    function superSafeFunction96508587(address safu) external returns (address) {
+    function superSafeFunction96508587(address safu) external pure returns (address) {
         // vibes check
         if (420 > 69) return safu;
         return address(0);

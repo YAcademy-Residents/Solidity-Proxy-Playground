@@ -58,7 +58,7 @@ contract AudiusHack is Test {
         emit log_uint(uint256(afteraction)); // log the first storage slot value
         assertEq(uint256(afteraction), 1);
 
-        // @note calling initialize() a 2nd time does not work, because the proper boolean values in DelegateManager.sol are set (initialized = true, initializing = false)
+        // @note calling initialize() the 2nd time does not work, because the proper boolean values in DelegateManager.sol are set (initialized = true, initializing = false)
         delegateAddress.initialize();
     }
 
