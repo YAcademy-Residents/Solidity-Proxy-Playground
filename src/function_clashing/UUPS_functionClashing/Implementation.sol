@@ -21,7 +21,7 @@ contract Implementation {
         (, bytes memory ret) = target.delegatecall(_calldata);
     }
 
-    function doImplementationStuff() external returns (bool) {
+    function doImplementationStuff() external pure returns (bool) {
         return true;
     }
 }

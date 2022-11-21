@@ -33,7 +33,7 @@ contract UUPS_selfdestruct is Test {
         tokenAddress = new SimpleToken(); // Deploy logic contract
         proxy = new UUPSProxy(address(tokenAddress), ""); // Deploy ERC1967 proxy contract with tokenAddress logic as implementation
 
-        // deploy the new V2 contract version, which is used in some tests
+        // Deploy the new V2 contract version, which is used in some tests
         vm.prank(address(alice));
         tokenV2 = new SimpleTokenV2();
 
