@@ -2,23 +2,25 @@
 pragma solidity ^0.8.13;
 
 contract Multisig {
-	address public owner;
+    address public owner;
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner);
         _;
     }
 
-	function initialize() external {
+    function initialize() external {
         require(owner == address(0), "Initialized");
         owner = msg.sender;
-	}
+    }
 
     function transferFromContract(address _contract) external onlyOwner {
-		bool status;
-		(status, ) = _contract.delegatecall(abi.encodeWithSignature("transfer()"));
-		if (!status) revert();
-	}
+        bool status;
+        (status, ) = _contract.delegatecall(
+            abi.encodeWithSignature("transfer()")
+        );
+        if (!status) revert();
+    }
 
     function collect() external onlyOwner {
         bool sent;
