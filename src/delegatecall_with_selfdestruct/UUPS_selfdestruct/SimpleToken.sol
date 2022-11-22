@@ -21,6 +21,7 @@ contract SimpleToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUP
         _mint(to, amount);
     }
 
+    ///@dev Only owner can call upgrade
     function _authorizeUpgrade(address newImplementation)
         internal
         onlyOwner

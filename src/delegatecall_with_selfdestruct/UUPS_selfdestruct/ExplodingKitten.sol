@@ -22,6 +22,6 @@ contract ExplodingKitten is UUPSUpgradeable {
     return 42;
   }
 
-  // Any can call upgrade
+  // Anyone can call upgrade
   function _authorizeUpgrade(address newImplementation) internal override {}
 }
