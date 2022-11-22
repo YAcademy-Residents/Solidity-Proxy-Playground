@@ -48,7 +48,7 @@ contract ContractTest is Test {
     function testFixed() public {
         libContract.doSomething(1337);
         assertTrue(libContract.someNumber() == 1337);
-    
+
         hackMeFixedContract.doSomething(77);
         assertTrue(hackMeFixedContract.someNumber() == 77);
         assertTrue(libContract.someNumber() == 1337);

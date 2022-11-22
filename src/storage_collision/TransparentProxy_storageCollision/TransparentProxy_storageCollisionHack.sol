@@ -11,7 +11,7 @@ pragma solidity ^0.8.13;
 ///
 /// The implementation will be set to a deployment of `Implementation.sol` but is also settable.
 contract Proxy {
-    address immutable public owner;
+    address public immutable owner;
     address public implementation;
 
     modifier ifAdmin() {
@@ -32,7 +32,7 @@ contract Proxy {
         implementation = implementation_;
     }
 
-  /**
+    /**
      * @dev Delegates the current call to `implementation`.
      *
      * This function does not return to its internal call site, it will return directly to the external caller.
@@ -46,7 +46,14 @@ contract Proxy {
 
             // Call the implementation.
             // out and outsize are 0 because we don't know the size yet.
-            let result := delegatecall(gas(), implementation_, 0, calldatasize(), 0, 0)
+            let result := delegatecall(
+                gas(),
+                implementation_,
+                0,
+                calldatasize(),
+                0,
+                0
+            )
 
             // Copy the returned data.
             returndatacopy(0, 0, returndatasize())
@@ -61,7 +68,6 @@ contract Proxy {
             }
         }
     }
-
 
     /**
      * @dev Delegates the current call to the address returned by `_implementation()`.
@@ -80,5 +86,5 @@ contract Proxy {
         _fallback();
     }
 
-    receive() payable external {}
+    receive() external payable {}
 }

@@ -25,9 +25,11 @@ contract UUPS_selfdestruct is Test {
     }
 
     // Step 1: Initialize the proxy and verify the owner is this contract
-	// This is the "ideal" scenario because the proper owner remembered to properly initialize the contract
+    // This is the "ideal" scenario because the proper owner remembered to properly initialize the contract
     function testProperProxyInitialization() public {
-        (bool validResponse, bytes memory returnedData) = address(proxy).call(abi.encodeWithSignature("initialize()"));
+        (bool validResponse, bytes memory returnedData) = address(proxy).call(
+            abi.encodeWithSignature("initialize()")
+        );
         assertTrue(validResponse);
         (validResponse, returnedData) = address(proxy).call(
             abi.encodeWithSignature("owner()")
@@ -38,16 +40,18 @@ contract UUPS_selfdestruct is Test {
         // owner of UUPSProxy contract should be this contract
         assertEq(owner, address(this));
 
-		// confirm this address has 10 ether worth of tokens
+        // confirm this address has 10 ether worth of tokens
         assertEq(testToken.balanceOf(address(this)), 10 ether);
     }
 
     // Step 2: Initialize proxy as Alice and verify the owner is Alice
     // The owner forgot to initialize the proxy so the first step for the attacker is to become the owner
-	// Confirm Alice got the tokens minted in the initialize() function
+    // Confirm Alice got the tokens minted in the initialize() function
     function testForgotProxyInitialization() public {
         vm.prank(address(alice));
-        (bool validResponse, bytes memory returnedData) = address(proxy).call(abi.encodeWithSignature("initialize()"));
+        (bool validResponse, bytes memory returnedData) = address(proxy).call(
+            abi.encodeWithSignature("initialize()")
+        );
         assertTrue(validResponse);
         (validResponse, returnedData) = address(proxy).call(
             abi.encodeWithSignature("owner()")
@@ -57,7 +61,7 @@ contract UUPS_selfdestruct is Test {
 
         // owner of UUPSProxy contract is alice because the deployer forgot to initialize the UUPS proxy
         assertEq(owner, address(alice));
-		// confirm that alice has 10 ether worth of tokens
-		assertEq(testToken.balanceOf(address(alice)), 0 ether);
+        // confirm that alice has 10 ether worth of tokens
+        assertEq(testToken.balanceOf(address(alice)), 0 ether);
     }
 }

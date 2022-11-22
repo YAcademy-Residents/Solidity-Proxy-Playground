@@ -7,7 +7,7 @@ pragma solidity ^0.8.13;
 import "./SimpleToken.sol";
 
 contract SimpleTokenV2 is SimpleToken {
-  function version() public pure returns (string memory) {
-    return "v2";
-  }
+    function version() public pure returns (string memory) {
+        return "v2";
+    }
 }

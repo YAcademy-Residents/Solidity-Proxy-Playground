@@ -24,7 +24,7 @@ contract UUPS_selfdestruct is Test {
     ExplodingKitten public kittenAddress;
     SimpleTokenFixed public fixedtoken;
     UUPSProxy public proxy;
-	UUPSProxy public proxyfixed;
+    UUPSProxy public proxyfixed;
 
     address public alice;
     address public emptyAddress;
@@ -53,7 +53,7 @@ contract UUPS_selfdestruct is Test {
     }
 
     // Step 1: Initialize the proxy and verify the owner is this contract
-	// This is the "ideal" scenario because the proper owner remembered to properly initialize the contract
+    // This is the "ideal" scenario because the proper owner remembered to properly initialize the contract
     function testProxyInitialize() public {
         (bool s, bytes memory returnedData) = address(proxy).call(abi.encodeWithSignature("initialize()"));
         assertTrue(s);
@@ -84,7 +84,7 @@ contract UUPS_selfdestruct is Test {
     }
 
     // Step 3: Initialize proxy as and upgrading the contract to tokenV2
-	// Alice goes one step further and upgrades the implementation contract after becoming the proxy owner
+    // Alice goes one step further and upgrades the implementation contract after becoming the proxy owner
     function testAliceV2Upgrade() public {
         // first, initialize
         vm.prank(address(alice));
@@ -122,7 +122,7 @@ contract UUPS_selfdestruct is Test {
     }
 
     // Step 4: Case of Alice initializing the UUPS proxy and upgrading the contract to the PoC contract
-	// Alice upgrades the implementation contract not to a benign contract, but the exploding kitten contract
+    // Alice upgrades the implementation contract not to a benign contract, but the exploding kitten contract
     function testAlicePoCDemo() public {
         // first, initialize
         vm.prank(address(alice));
@@ -195,27 +195,27 @@ contract UUPS_selfdestruct is Test {
     // Step 6: Case of Alice initializing the UUPS proxy and upgrading the contract to the PoC contract, but encountering an error
     // The fix in OZ 4.3.2 was to add an onlyProxy() modifier so initialize() is only called through the proxy, and not called directly (when it would have no effect)
     // But a different error is encountered here because we are using an even newer OpenZeppelin version which has more security
-	// Basic lesson: Remember to initialize any UUPS proxy implementation!
+    // Basic lesson: Remember to initialize any UUPS proxy implementation!
    function testFixedProxyWithPoC() public {
         // first, initialize
         vm.prank(address(alice));
         (bool a, bytes memory data) = address(proxyfixed).call(abi.encodeWithSignature("initialize()"));
         assertTrue(a);
-		
+        
         (a, data) = address(proxyfixed).call(
             abi.encodeWithSignature("owner()")
         );
         assertTrue(a);
         address owner = abi.decode(data, (address));
-		// owner of UUPSProxy contract should be this contract
+        // owner of UUPSProxy contract should be this contract
         assertEq(owner, address(alice));
 
         // update proxy to PoC contract
         // Should be possible to do the next 2 steps in 1 step with upgradeToAndCall(), but this was easier to debug and make work
         vm.prank(address(alice));
-		// ERC1967 upgrade process rely on EIP1822 after PR 3021 (https://github.com/OpenZeppelin/openzeppelin-contracts/pull/3021), causing kitten upgrade to procude an error of "ERC1967Upgrade: new implementation is not UUPS"
+        // ERC1967 upgrade process rely on EIP1822 after PR 3021 (https://github.com/OpenZeppelin/openzeppelin-contracts/pull/3021), causing kitten upgrade to procude an error of "ERC1967Upgrade: new implementation is not UUPS"
         vm.expectRevert();
-		(a, data) = address(proxyfixed).call(
+        (a, data) = address(proxyfixed).call(
             abi.encodeWithSignature("upgradeTo(address)", address(kittenAddress))
         );
         assertTrue(a);

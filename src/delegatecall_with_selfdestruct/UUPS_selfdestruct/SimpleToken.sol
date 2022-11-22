@@ -9,9 +9,13 @@ import "openzeppelin-contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "openzeppelin-contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "openzeppelin-contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract SimpleToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable {
-
-    function initialize() initializer public {
+contract SimpleToken is
+    Initializable,
+    ERC20Upgradeable,
+    OwnableUpgradeable,
+    UUPSUpgradeable
+{
+    function initialize() public initializer {
         __ERC20_init("SimpleToken", "STK");
         __Ownable_init();
         __UUPSUpgradeable_init();
@@ -24,9 +28,7 @@ contract SimpleToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUP
     ///@dev Only owner can call upgrade
     function _authorizeUpgrade(address newImplementation)
         internal
-        onlyOwner
         override
+        onlyOwner
     {}
-
-
 }

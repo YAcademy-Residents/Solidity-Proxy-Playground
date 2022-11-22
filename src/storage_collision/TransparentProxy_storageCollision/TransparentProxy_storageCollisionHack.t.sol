@@ -3,15 +3,18 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 
-import {Proxy} from      "./TransparentProxy_storageCollisionHack.sol";
+import {Proxy} from "./TransparentProxy_storageCollisionHack.sol";
 import {ProxyFixed} from "./TransparentProxy_storageCollisionHack_fixed.sol";
 import {Implementation} from "./Implementation.sol";
 
 interface IProxy {
     function implementation() external returns (address);
+
     function setBenignAddress(address) external;
+
     function setImplementation(address) external;
-	function owner() external returns (address);
+
+    function owner() external returns (address);
 }
 
 contract TransparentProxy_storageCollisionHack is Test {
@@ -22,7 +25,6 @@ contract TransparentProxy_storageCollisionHack is Test {
     address public owner;
 
     function setUp() public {
-
         // deploy vulnerable version
         owner = address(0xbabe);
         implementation = new Implementation();
@@ -30,7 +32,6 @@ contract TransparentProxy_storageCollisionHack is Test {
 
         // deploy fixed version
         proxyFixed = address(new ProxyFixed(address(implementation), owner));
-
     }
 
     // Here's the hack, if owner calls the very innocent `setBenignAddress`
@@ -43,7 +44,7 @@ contract TransparentProxy_storageCollisionHack is Test {
         vm.prank(owner);
         IProxy(proxy).setBenignAddress(newImplementationAddress);
         assertEq(IProxy(proxy).implementation(), newImplementationAddress);
-		assertEq(IProxy(proxy).owner(), owner);
+        assertEq(IProxy(proxy).owner(), owner);
     }
 
     // Here's the same test on the fixed contract.
@@ -60,7 +61,5 @@ contract TransparentProxy_storageCollisionHack is Test {
         vm.prank(owner);
         IProxy(proxyFixed).setImplementation(newImplementationAddress);
         assertEq(IProxy(proxyFixed).implementation(), newImplementationAddress);
-
     }
-
 }

@@ -10,28 +10,30 @@ import "openzeppelin-contracts/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract SimpleTokenFixed is Initializable, ERC20, Ownable, UUPSUpgradeable {
-
-	constructor() ERC20("SimpleToken", "STK") {
-		initialize();
+    constructor() ERC20("SimpleToken", "STK") {
+        initialize();
     }
 
-    function initialize() initializer public {
-		_transferOwnership(_msgSender()); // copied from Ownable constructor
+    function initialize() public initializer {
+        _transferOwnership(_msgSender()); // copied from Ownable constructor
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
 
-	function fortytwo(address to, uint256 amount) external pure returns (uint256) {
+    function fortytwo(address to, uint256 amount)
+        external
+        pure
+        returns (uint256)
+    {
         return 42;
     }
 
     ///@dev Only owner can call upgrade
     function _authorizeUpgrade(address newImplementation)
         internal
-        onlyOwner
         override
+        onlyOwner
     {}
-
 }

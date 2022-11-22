@@ -11,14 +11,14 @@ pragma solidity ^0.8.13;
 ///
 /// The implementation will be set to a deployment of `Implementation.sol` but is also settable.
 contract ProxyFixed {
-
-    address immutable public owner;
+    address public immutable owner;
     /**
      * @dev Storage slot with the address of the current implementation.
      * This is the keccak-256 hash of "eip1967.proxy.implementation" subtracted by 1, and is
      * validated in the constructor.
      */
-    bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+    bytes32 internal constant _IMPLEMENTATION_SLOT =
+        0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
     modifier ifAdmin() {
         if (msg.sender == owner) {
@@ -38,7 +38,7 @@ contract ProxyFixed {
 
     function implementation() public view returns (address impl) {
         bytes32 slot = _IMPLEMENTATION_SLOT;
-            assembly {
+        assembly {
             impl := sload(slot)
         }
     }
@@ -51,7 +51,7 @@ contract ProxyFixed {
         }
     }
 
-  /**
+    /**
      * @dev Delegates the current call to `implementation`.
      *
      * This function does not return to its internal call site, it will return directly to the external caller.
@@ -65,7 +65,14 @@ contract ProxyFixed {
 
             // Call the implementation.
             // out and outsize are 0 because we don't know the size yet.
-            let result := delegatecall(gas(), implementation_, 0, calldatasize(), 0, 0)
+            let result := delegatecall(
+                gas(),
+                implementation_,
+                0,
+                calldatasize(),
+                0,
+                0
+            )
 
             // Copy the returned data.
             returndatacopy(0, 0, returndatasize())
@@ -80,7 +87,6 @@ contract ProxyFixed {
             }
         }
     }
-
 
     /**
      * @dev Delegates the current call to the address returned by `_implementation()`.
@@ -99,5 +105,5 @@ contract ProxyFixed {
         _fallback();
     }
 
-    receive() payable external {}
+    receive() external payable {}
 }
