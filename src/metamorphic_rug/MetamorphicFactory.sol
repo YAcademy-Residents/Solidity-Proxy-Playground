@@ -1,10 +1,7 @@
 // From: https://ethereum-blockchain-developer.com/110-upgrade-smart-contracts/12-metamorphosis-create2/#overwriting-smart-contracts
 pragma solidity ^0.8.13;
 
-import {Parent} from "./Parent.sol";
-
-contract Grandparent {
-    address public parent;
+contract MetamorphicFactory {
     mapping (address => address) _implementations;
 
     function deploy(uint salt, bytes calldata bytecode) public returns (address) {
@@ -48,7 +45,6 @@ contract Grandparent {
           addr == metamorphicContractAddress,
           "Failed to deploy the new metamorphic contract."
         );
-        parent = addr;
         return addr;
     }
 
