@@ -9,8 +9,6 @@ contract Multisig {
         _;
     }
 
-    receive() external payable {}
-
 	function initialize() external {
         require(owner == address(0), "Initialized");
         owner = msg.sender;
