@@ -10,6 +10,10 @@ import {TestToken} from "./TestToken.sol";
 // The solution is to initialize the UUPS proxy properly (by calling `initialize()` via the proxy contract)
 // Multiple white hat bounties have been claimed for this issue
 
+interface ITestToken {
+    function balanceOf(address) external returns (uint256);
+}
+
 contract UUPS_selfdestruct is Test {
     TestToken public testToken;
     UUPSProxy public proxy;
@@ -40,8 +44,13 @@ contract UUPS_selfdestruct is Test {
         // owner of UUPSProxy contract should be this contract
         assertEq(owner, address(this));
 
+        (validResponse, returnedData) = address(proxy).call(
+            abi.encodeWithSignature("mint(uint256)", uint256(10 ether))
+        );
+        assertTrue(validResponse);
+
         // confirm this address has 10 ether worth of tokens
-        assertEq(testToken.balanceOf(address(this)), 10 ether);
+        assertEq(ITestToken(address(proxy)).balanceOf(address(this)), 10 ether);
     }
 
     // Step 2: Initialize proxy as Alice and verify the owner is Alice
@@ -61,7 +70,14 @@ contract UUPS_selfdestruct is Test {
 
         // owner of UUPSProxy contract is alice because the deployer forgot to initialize the UUPS proxy
         assertEq(owner, address(alice));
+
+        vm.prank(address(alice));
+		(validResponse, returnedData) = address(proxy).call(
+            abi.encodeWithSignature("mint(uint256)", uint256(10 ether))
+        );
+        assertTrue(validResponse);
+
         // confirm that alice has 10 ether worth of tokens
-        assertEq(testToken.balanceOf(address(alice)), 0 ether);
+        assertEq(ITestToken(address(proxy)).balanceOf(address(alice)), 10 ether);
     }
 }

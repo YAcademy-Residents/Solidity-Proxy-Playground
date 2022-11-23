@@ -9,14 +9,18 @@ import "openzeppelin-contracts/contracts/access/Ownable.sol";
 // code partially borrowed from https://forum.openzeppelin.com/t/uups-proxies-tutorial-solidity-javascript/7786
 
 contract TestToken is Initializable, ERC20, UUPSUpgradeable, Ownable {
-    constructor() ERC20("TestToken", "TTK") {
-        initialize();
+    
+	constructor() ERC20("TestToken", "TTK") {
+        // constructor is ignored by the proxy
     }
 
     function initialize() public initializer {
         _transferOwnership(_msgSender()); // copied from Ownable constructor
-        _mint(_msgSender(), 10 ether);
     }
+
+    function mint(uint256 quantity) external onlyOwner {
+        _mint(_msgSender(), quantity);
+	}
 
     // @note this function should have the onlyOwner modifier
     function _authorizeUpgrade(address) internal override onlyOwner {}

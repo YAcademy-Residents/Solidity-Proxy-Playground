@@ -11,7 +11,7 @@ import "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract SimpleTokenFixed is Initializable, ERC20, Ownable, UUPSUpgradeable {
     constructor() ERC20("SimpleToken", "STK") {
-        initialize();
+        // constructor is ignored by the proxy
     }
 
     function initialize() public initializer {
