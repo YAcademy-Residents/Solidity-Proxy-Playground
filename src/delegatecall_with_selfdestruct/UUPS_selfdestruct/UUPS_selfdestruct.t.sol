@@ -207,7 +207,7 @@ contract UUPS_selfdestruct is Test {
         );
         assertTrue(a);
         address owner = abi.decode(data, (address));
-        // owner of UUPSProxy contract should be this contract
+        // owner of UUPSProxy contract should be alice
         assertEq(owner, address(alice));
 
         // update proxy to PoC contract
